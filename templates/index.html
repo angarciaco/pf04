@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de consulta y extracción de radicados PQRS - Alcaldía Los Patios">
+    <title>Consulta de Radicados PQRS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Fondo animado -->
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1>Radicados PQRS</h1>
+                    <p class="subtitle">Extracción y consulta de datos · SIEP Los Patios</p>
+                </div>
+            </div>
+            <button class="btn-icon" id="btnHistorial" title="Ver archivos generados">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Formulario principal -->
+        <main class="main-content">
+            <form id="formulario" class="form-card">
+                <div class="form-header">
+                    <h2>Nuevo Reporte</h2>
+                    <p>Configure el rango de radicados a consultar</p>
+                </div>
+
+                <div class="form-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="inicio">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="label-icon">
+                                    <path d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                </svg>
+                                Radicado Inicio
+                            </label>
+                            <input
+                                type="number"
+                                id="inicio"
+                                name="inicio"
+                                placeholder="Ej: 20262010186242"
+                                required
+                            >
+                            <span class="field-hint">Número del primer radicado del rango</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fin">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="label-icon">
+                                    <path d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                </svg>
+                                Radicado Fin
+                            </label>
+                            <input
+                                type="number"
+                                id="fin"
+                                name="fin"
+                                placeholder="Ej: 20262010194992"
+                                required
+                            >
+                            <span class="field-hint">Número del último radicado del rango</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="paso">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="label-icon">
+                                    <path d="M4 6h16M4 12h16M4 18h7"/>
+                                </svg>
+                                Paso (Incremento)
+                            </label>
+                            <input
+                                type="number"
+                                id="paso"
+                                name="paso"
+                                value="10"
+                                min="1"
+                                required
+                            >
+                            <span class="field-hint">Incremento entre cada radicado (por defecto 10)</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nombre">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="label-icon">
+                                    <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                </svg>
+                                Nombre del Archivo
+                            </label>
+                            <input
+                                type="text"
+                                id="nombre"
+                                name="nombre"
+                                placeholder="radicados.csv"
+                                value="radicados.csv"
+                            >
+                            <span class="field-hint">Nombre para el archivo CSV de salida</span>
+                        </div>
+                    </div>
+
+                    <!-- Info del rango calculado -->
+                    <div class="range-info" id="rangeInfo">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span id="rangeText">Ingrese los valores para ver el total de registros estimados</span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary" id="btnGenerar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon-svg">
+                            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        <span>Generar CSV</span>
+                    </button>
+                    <button type="reset" class="btn-secondary" id="btnLimpiar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon-svg">
+                            <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <span>Limpiar</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Panel de progreso (oculto inicialmente) -->
+            <div class="progress-card hidden" id="progressPanel">
+                <div class="progress-header">
+                    <h3>
+                        <div class="spinner" id="spinnerIcon"></div>
+                        <span id="progressTitle">Procesando radicados...</span>
+                    </h3>
+                    <span class="badge" id="progressBadge">0%</span>
+                </div>
+
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+
+                <div class="progress-stats">
+                    <div class="stat">
+                        <span class="stat-label">Procesados</span>
+                        <span class="stat-value" id="statProcessed">0 / 0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Radicado Actual</span>
+                        <span class="stat-value" id="statCurrent">—</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Errores</span>
+                        <span class="stat-value" id="statErrors">0</span>
+                    </div>
+                </div>
+
+                <!-- Log de eventos -->
+                <div class="event-log" id="eventLog">
+                    <div class="log-entry info">
+                        <span class="log-time"></span>
+                        <span class="log-msg">Esperando inicio del proceso...</span>
+                    </div>
+                </div>
+
+                <!-- Resultado final (oculto hasta completar) -->
+                <div class="result-panel hidden" id="resultPanel">
+                    <div class="result-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <p id="resultMessage">Proceso completado exitosamente.</p>
+                    <a href="#" class="btn-download" id="btnDescargar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon-svg">
+                            <path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Descargar CSV
+                    </a>
+                    <button class="btn-secondary btn-sm" id="btnNuevoReporte">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon-svg">
+                            <path d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Nuevo Reporte
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal de Historial -->
+            <div class="modal-overlay hidden" id="modalOverlay">
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3>Archivos Generados</h3>
+                        <button class="btn-close" id="btnCerrarModal">&times;</button>
+                    </div>
+                    <div class="modal-body" id="modalBody">
+                        <p class="loading-text">Cargando archivos...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Sistema de Consulta PQRS &middot; SIEP Alcaldía Los Patios</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
